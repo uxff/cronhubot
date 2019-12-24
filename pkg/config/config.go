@@ -7,13 +7,16 @@ import (
 
 type Config struct {
 	APPENV       string `envconfig:"APPENV"`
+
+	// like: mysql://yourusername:yourpassword(yourmysqlhost)/yourdbname?charset=utf8mb4&parseTime=True&loc=Local
 	DatastoreURL string `envconfig:"DATASTORE_URL"`
+
 	Port         int    `envconfig:"SERVICE_PORT"`
 }
 
 func init() {
 	viper.SetDefault("PORT", "80")
-	viper.SetDefault("APPENV", "beta")
+	viper.SetDefault("APPENV", "dev")
 }
 
 func LoadEnv() (*Config, error) {

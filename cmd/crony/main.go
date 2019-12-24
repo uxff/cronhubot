@@ -1,24 +1,29 @@
+/**
+  运行方式：
+ 	APPENV=beta SERVICE_PORT=9001 DATASTORE_URL='mysql://yourusername:yourpwd(yourmysqlhost)/yourdbname?charset=utf8mb4&parseTime=True&loc=Local' ./main
+
+
+*/
 package main
 
 import (
 	"flag"
 	"fmt"
+	"github.com/spf13/cobra"
 	"github.com/uxff/cronhubot/pkg/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	slog "log"
 	"os"
-	"github.com/spf13/cobra"
 )
 
 var (
 	version     string
 	versionFlag bool
+	logLevel = 0
 )
-var (
-	level    = flag.Int("l", 0, "log level, -1:debug, 0:info, 1:warn, 2:error")
-	confFile = flag.String("conf", "conf/files/base.json", "config file path")
-)
+
+
 func main() {
 	versionString := "Cron Service v" + version
 	cobra.OnInitialize(func() {
@@ -28,10 +33,11 @@ func main() {
 		}
 	})
 
+	flag.IntVar(&logLevel, "l", logLevel, "log logLevel, -1:debug, 0:info, 1:warn, 2:error")
 	flag.Parse()
 
 	lcf := zap.NewDevelopmentConfig()
-	lcf.Level.SetLevel(zapcore.Level(*level))
+	lcf.Level.SetLevel(zapcore.Level(logLevel))
 	lcf.Development = false
 	lcf.DisableStacktrace = true
 	logger, err := lcf.Build(zap.AddCallerSkip(1))
