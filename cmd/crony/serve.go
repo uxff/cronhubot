@@ -4,27 +4,17 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cobra"
 	"github.com/uxff/cronhubot/pkg/checker"
 	"github.com/uxff/cronhubot/pkg/config"
 	"github.com/uxff/cronhubot/pkg/datastore"
 	"github.com/uxff/cronhubot/pkg/handlers"
+	"github.com/uxff/cronhubot/pkg/log"
 	"github.com/uxff/cronhubot/pkg/repos"
 	"github.com/uxff/cronhubot/pkg/scheduler"
-	"github.com/uxff/cronhubot/pkg/log"
 )
 
-func Serve(cmd *cobra.Command, args []string) {
+func Serve(env *config.Config) error {
 	log.Infof("cron Service starting...")
-
-	env, err := config.LoadEnv()
-	failOnError(err, "Failed to load config!")
-	//if strings.ToLower(env.APPENV) == "pro" {
-	//	log.SetLevel(log.LevelINFO)
-	//} else {
-	//	log.SetLevel(log.LevelDEBUG)
-	//}
-	log.Debugf("环境变量：%+v", env)
 
 	ds, err := datastore.New(env.DatastoreURL)
 	failOnError(err, "Failed to init dababase connection!")
@@ -49,14 +39,16 @@ func Serve(cmd *cobra.Command, args []string) {
 
 	router.GET("/health", healthzHandler.HealthzIndex)
 	group := router.Group("/", eventsHandler.BasicMiddleware)
-	// group.GET("/events", eventsHandler.EventsIndex)
+	group.GET("/events", eventsHandler.EventsIndex)
 	group.POST("/events", eventsHandler.EventsCreate)
-	// group.GET("/events/:id", eventsHandler.EventsShow)
+	group.GET("/events/:id", eventsHandler.EventsShow)
 	// group.PUT("/events/:id", eventsHandler.EventsUpdate)
 	// group.DELETE("/events/:id", eventsHandler.EventsDelete)
 
 	addr := fmt.Sprintf(":%d", env.Port)
-	log.Fatalf("%v", router.Run(addr))
+	log.Debugf("service will start at %s", addr)
+
+	return router.Run(addr)
 }
 
 func failOnError(err error, msg string) {

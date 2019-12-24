@@ -11,6 +11,9 @@ const (
 	MySQL = "mysql"
 )
 
+/**
+ *	dsn格式: mysql://www:123x456@tcp(192.168.112.129)/cronhubot?charset=utf8mb4&parseTime=True&loc=Local
+ */
 func New(dsn string) (*xorm.Engine, error) {
 	u, err := url.Parse(dsn)
 	if err != nil {
