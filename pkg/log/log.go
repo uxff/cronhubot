@@ -10,7 +10,7 @@ type Logger interface {
 	Warnf(format string, v ...interface{})
 	Errorf(format string, v ...interface{})
 	Fatalf(format string, v ...interface{})
-	//TraceId(traceId string)
+	//Trace(traceId string)
 }
 
 func SetLogger(l Logger) {
@@ -45,8 +45,4 @@ func Fatalf(format string, v ...interface{}) {
 	if DefaultLogger != nil {
 		DefaultLogger.Fatalf(format, v...)
 	}
-}
-
-func Trace(traceId string) Logger {
-	return DefaultLogger
 }
