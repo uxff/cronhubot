@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cronscheduler-ingress
+spec:
+  rules:
+    - host: cronjobpre.github.io
+      http:
+        paths:
+          - backend:
+              serviceName: cronscheduler-svc
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - cronjobpre.github.io
+      secretName: github-io-ingress-secret

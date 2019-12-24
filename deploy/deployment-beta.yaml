@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cronscheduler
+  name: cronscheduler
+  namespace: default
+spec:
+  progressDeadlineSeconds: 60
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cronscheduler
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: cronscheduler
+    spec:
+      containers:
+        - env:
+            - name: DATASTORE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: athena-dburl
+                  name: dbsecret-config
+            - name: SERVICE_PORT
+              value: "80"
+            - name: APPENV
+              value: "beta"
+          image: registry-vpc.cn-beijing.aliyuncs.com/yourcompany/cronscheduler:v${BUILD_NUMBER}
+          imagePullPolicy: IfNotPresent
+          name: cronscheduler
+          resources:
+            limits:
+              cpu: "1"
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: volume-localtime
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - hostPath:
+            path: /etc/localtime
+            type: ""
+          name: volume-localtime
+      imagePullSecrets:
+        - name: regsecret-vpc
