@@ -1,6 +1,6 @@
 /**
-	单进程应用 非分布式(Single node application, not distributed)
-    运行方式：
+  分布式应用入口 (Distributed)
+  运行方式：
  	APPENV=beta SERVICE_PORT=9001 DATASTORE_URL='mysql://yourusername:yourpwd@tcp(yourmysqlhost)/yourdbname?charset=utf8mb4&parseTime=True&loc=Local' ./main
 
 
