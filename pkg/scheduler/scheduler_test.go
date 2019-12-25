@@ -8,13 +8,13 @@ import (
 )
 
 func TestScheduleAll(t *testing.T) {
-	repoMock := mocks.NewEventRepo()
+	repoMock := mocks.NewJobRepo()
 	s := New(repoMock)
 	s.ScheduleAll()
 }
 
 func TestSchedulerCreate(t *testing.T) {
-	s := New(mocks.NewEventRepo())
+	s := New(mocks.NewJobRepo())
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
@@ -22,7 +22,7 @@ func TestSchedulerCreate(t *testing.T) {
 }
 
 func TestSchedulerFind(t *testing.T) {
-	s := New(mocks.NewEventRepo())
+	s := New(mocks.NewJobRepo())
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
@@ -35,7 +35,7 @@ func TestSchedulerFind(t *testing.T) {
 }
 
 func TestSchedulerUpdate(t *testing.T) {
-	s := New(mocks.NewEventRepo())
+	s := New(mocks.NewJobRepo())
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
@@ -48,7 +48,7 @@ func TestSchedulerUpdate(t *testing.T) {
 }
 
 func TestSchedulerDelete(t *testing.T) {
-	s := New(mocks.NewEventRepo())
+	s := New(mocks.NewJobRepo())
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()

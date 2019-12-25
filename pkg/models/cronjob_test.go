@@ -6,7 +6,7 @@ import (
 )
 
 func TestValidate_Defaults(t *testing.T) {
-	e := NewEvent()
+	e := NewCronJob()
 	errors, ok := e.Validate()
 
 	if ok {
@@ -35,7 +35,7 @@ func TestValidate_Defaults(t *testing.T) {
 }
 
 func TestValidate_Status(t *testing.T) {
-	e := NewEvent()
+	e := NewCronJob()
 	e.Status = "invalid"
 	errors, ok := e.Validate()
 
@@ -53,7 +53,7 @@ func TestValidate_Status(t *testing.T) {
 }
 
 func TestValidate_Retries(t *testing.T) {
-	e := NewEvent()
+	e := NewCronJob()
 	e.Retries = 0
 	errors, ok := e.Validate()
 
@@ -69,7 +69,7 @@ func TestValidate_Retries(t *testing.T) {
 		t.Fail()
 	}
 
-	e = NewEvent()
+	e = NewCronJob()
 	e.Retries = 11
 	errors, ok = e.Validate()
 
@@ -79,8 +79,8 @@ func TestValidate_Retries(t *testing.T) {
 }
 
 func TestSetAttributes(t *testing.T) {
-	e := NewEvent()
-	newEvent := &CronJobs{
+	e := NewCronJob()
+	newEvent := &CronJob{
 		Url:            "http://newapi.io",
 		Expression:     "1 1 1 1 1",
 		Status:         Inactive,
@@ -113,14 +113,14 @@ func TestSetAttributes(t *testing.T) {
 func TestCronJobs_CheckExpression(t *testing.T) {
 	expression := "* * * * * *"
 
-	e := NewEvent()
+	e := NewCronJob()
 	if err := e.CheckExpression(expression); err != nil {
 		t.Fail()
 	}
 }
 
 func TestNewEvent(t *testing.T) {
-	event := NewEvent()
+	event := NewCronJob()
 
 	b := []byte(`{"expire_time":"2019-01-01 11:11:11"}`)
 	err := json.Unmarshal(b, event)

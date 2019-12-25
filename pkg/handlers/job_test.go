@@ -14,9 +14,9 @@ import (
 )
 
 func TestEventsIndex(t *testing.T) {
-	repoMock := mocks.NewEventRepo()
+	repoMock := mocks.NewJobRepo()
 	schedulerMock := mocks.NewScheduler()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/events", nil)
@@ -25,10 +25,10 @@ func TestEventsIndex(t *testing.T) {
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
-	events := []models.Event{}
+	events := []models.CronJob{}
 	if err := json.NewDecoder(res.Body).Decode(&events); err != nil {
 		t.Fail()
 	}
@@ -44,8 +44,8 @@ func TestEventsIndex(t *testing.T) {
 
 func TestEventsIndexByStatus(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/events?status=active", nil)
@@ -54,7 +54,7 @@ func TestEventsIndexByStatus(t *testing.T) {
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByStatus {
@@ -68,8 +68,8 @@ func TestEventsIndexByStatus(t *testing.T) {
 
 func TestEventsIndexByExpression(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/events?expression=* * * * *", nil)
@@ -78,7 +78,7 @@ func TestEventsIndexByExpression(t *testing.T) {
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByExpression {
@@ -92,8 +92,8 @@ func TestEventsIndexByExpression(t *testing.T) {
 
 func TestEventCreate(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
@@ -103,7 +103,7 @@ func TestEventCreate(t *testing.T) {
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.EventsCreate, "POST")
+	r.HandleFunc("/events", h.JobsCreate, "POST")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Created {
@@ -121,8 +121,8 @@ func TestEventCreate(t *testing.T) {
 
 func TestEventShow(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/events/1", nil)
@@ -132,7 +132,7 @@ func TestEventShow(t *testing.T) {
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.EventsShow, "GET")
+	r.HandleFunc("/events/:id", h.JobsDetail, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Found {
@@ -146,8 +146,8 @@ func TestEventShow(t *testing.T) {
 
 func TestEventsUpdate(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
@@ -158,7 +158,7 @@ func TestEventsUpdate(t *testing.T) {
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.EventsUpdate, "PUT")
+	r.HandleFunc("/events/:id", h.JobsUpdate, "PUT")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Updated {
@@ -176,8 +176,8 @@ func TestEventsUpdate(t *testing.T) {
 
 func TestEventsDelete(t *testing.T) {
 	schedulerMock := mocks.NewScheduler()
-	repoMock := mocks.NewEventRepo()
-	h := NewEventsHandler(repoMock, schedulerMock)
+	repoMock := mocks.NewJobRepo()
+	h := NewJobsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("DELETE", "/events/1", nil)
@@ -187,7 +187,7 @@ func TestEventsDelete(t *testing.T) {
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.EventsDelete, "DELETE")
+	r.HandleFunc("/events/:id", h.JobsDelete, "DELETE")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Deleted {

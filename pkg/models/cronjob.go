@@ -16,7 +16,7 @@ const (
 	DefaultTimeStr = "1999-01-01 00:00:00"
 )
 
-type CronJobs struct {
+type CronJob struct {
 	Id             uint           `json:"id"               xorm:"unsigned int(11) notnull pk autoincr id"`
 	Name           string         `json:"name"             xorm:"varchar(50) default('') 'name'"`
 	Url            string         `json:"url"              xorm:"varchar(256) notnull default('') 'url'"`
@@ -29,19 +29,19 @@ type CronJobs struct {
 	UpdatedAt      utils.JsonTime `json:"updated_at"       xorm:"timestamp not null default('1999-01-01 00:00:00') 'updated_at'"`
 }
 
-func NewEvent() *CronJobs {
-	return &CronJobs{
+func NewCronJob() *CronJob {
+	return &CronJob{
 		Status:         Active, // 默认是有效的定时任务
 		Retries:        0,      // 默认请求业务方时不重试
 		RequestTimeout: 3,      // 请求业务方时默认超时时间是3s
 	}
 }
 
-func (e *CronJobs) TableName() string {
+func (e *CronJob) TableName() string {
 	return "athena_cronjobs"
 }
 
-func (e *CronJobs) CheckExpression(expression string) error {
+func (e *CronJob) CheckExpression(expression string) error {
 	if len(strings.Split(expression, " ")) != 6 {
 		return errors.New("定时配置格式不正确")
 	}
@@ -52,7 +52,7 @@ func (e *CronJobs) CheckExpression(expression string) error {
 	return nil
 }
 
-func (e *CronJobs) Validate() (errors map[string]string, ok bool) {
+func (e *CronJob) Validate() (errors map[string]string, ok bool) {
 	errors = make(map[string]string)
 	if e.Url == "" {
 		errors["url"] = "url is empty"
@@ -81,32 +81,32 @@ func (e *CronJobs) Validate() (errors map[string]string, ok bool) {
 	return
 }
 
-func (e *CronJobs) SetAttributes(newEvent *CronJobs) {
-	if newEvent.Name != "" {
-		e.Name = newEvent.Name
+func (e *CronJob) SetAttributes(newEnt *CronJob) {
+	if newEnt.Name != "" {
+		e.Name = newEnt.Name
 	}
 
-	if newEvent.Url != "" {
-		e.Url = newEvent.Url
+	if newEnt.Url != "" {
+		e.Url = newEnt.Url
 	}
 
-	if newEvent.Expression != "" {
-		e.Expression = newEvent.Expression
+	if newEnt.Expression != "" {
+		e.Expression = newEnt.Expression
 	}
 
-	if newEvent.Status != 0 {
-		e.Status = newEvent.Status
+	if newEnt.Status != 0 {
+		e.Status = newEnt.Status
 	}
 
-	if newEvent.Retries > 0 {
-		e.Retries = newEvent.Retries
+	if newEnt.Retries > 0 {
+		e.Retries = newEnt.Retries
 	}
 
-	if newEvent.RequestTimeout > 0 {
-		e.RequestTimeout = newEvent.RequestTimeout
+	if newEnt.RequestTimeout > 0 {
+		e.RequestTimeout = newEnt.RequestTimeout
 	}
 
-	if !newEvent.StopAt.IsEmptyTime() {
-		e.StopAt = newEvent.StopAt
+	if !newEnt.StopAt.IsEmptyTime() {
+		e.StopAt = newEnt.StopAt
 	}
 }

@@ -15,8 +15,8 @@ import (
 )
 
 type Scheduler interface {
-	Create(event *models.CronJobs) error
-	Update(event *models.CronJobs) error
+	Create(event *models.CronJob) error
+	Update(event *models.CronJob) error
 	Delete(id uint) error
 	Find(id uint) (*cron.Cron, error)
 	ScheduleAll()
@@ -26,10 +26,10 @@ type scheduler struct {
 	sync.RWMutex
 	Kv map[uint]*cron.Cron
 	// Cron *cron.Cron
-	r repos.EventRepo
+	r repos.JobRepo
 }
 
-func New(r repos.EventRepo) Scheduler {
+func New(r repos.JobRepo) Scheduler {
 	s := &scheduler{
 		Kv: make(map[uint]*cron.Cron),
 		// Cron: cron.New(),
@@ -41,7 +41,7 @@ func New(r repos.EventRepo) Scheduler {
 	return s
 }
 
-func (s *scheduler) Create(e *models.CronJobs) (err error) {
+func (s *scheduler) Create(e *models.CronJob) (err error) {
 	newCron := cron.New()
 
 	// 给回调地址上添加定时任务id
@@ -120,7 +120,7 @@ func (s *scheduler) Find(id uint) (cronJob *cron.Cron, err error) {
 	return
 }
 
-func (s *scheduler) Update(e *models.CronJobs) (err error) {
+func (s *scheduler) Update(e *models.CronJob) (err error) {
 	if err = s.Delete(e.Id); err != nil {
 		return
 	}

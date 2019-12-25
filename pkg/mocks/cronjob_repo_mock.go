@@ -4,7 +4,7 @@ import (
 	"github.com/uxff/cronhubot/pkg/models"
 )
 
-type EventRepoMock struct {
+type JobRepoMock struct {
 	Created      bool
 	Updated      bool
 	Deleted      bool
@@ -14,8 +14,8 @@ type EventRepoMock struct {
 	ByExpression bool
 }
 
-func NewEventRepo() *EventRepoMock {
-	return &EventRepoMock{
+func NewJobRepo() *JobRepoMock {
+	return &JobRepoMock{
 		Created:      false,
 		Updated:      false,
 		Deleted:      false,
@@ -26,29 +26,29 @@ func NewEventRepo() *EventRepoMock {
 	}
 }
 
-func (repo *EventRepoMock) Create(event *models.Event) (err error) {
+func (repo *JobRepoMock) Create(event *models.CronJob) (err error) {
 	repo.Created = true
 	return
 }
 
-func (repo *EventRepoMock) FindById(id int) (event *models.Event, err error) {
+func (repo *JobRepoMock) FindById(id int) (event *models.CronJob, err error) {
 	repo.Found = true
-	event = &models.Event{Id: 1}
+	event = &models.CronJob{Id: 1}
 	return
 }
 
-func (repo *EventRepoMock) Update(event *models.Event) (err error) {
+func (repo *JobRepoMock) Update(ent *models.CronJob) (err error) {
 	repo.Updated = true
 	return
 }
 
-func (repo *EventRepoMock) Delete(event *models.Event) (err error) {
+func (repo *JobRepoMock) Delete(ent *models.CronJob) (err error) {
 	repo.Deleted = true
 	return
 }
 
-func (repo *EventRepoMock) Search(sc *models.Query) (events []models.Event, err error) {
-	events = append(events, models.Event{Expression: "* * * * * *"})
+func (repo *JobRepoMock) Search(sc *models.Query) (ents []models.CronJob, err error) {
+	ents = append(ents, models.CronJob{Expression: "* * * * * *"})
 
 	switch true {
 	case sc.Status != "":

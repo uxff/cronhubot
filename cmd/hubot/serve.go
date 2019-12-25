@@ -27,23 +27,23 @@ func Serve(env *config.Config) error {
 	}
 	healthzHandler := handlers.NewHealthzHandler(checkers)
 
-	eventRepo := repos.NewEvent(ds)
+	eventRepo := repos.NewCronJob(ds)
 	authRepo := repos.NewAuth(ds)
 
 	sc := scheduler.New(eventRepo)
 	go sc.ScheduleAll()
 
-	eventsHandler := handlers.NewEventsHandler(authRepo, eventRepo, sc)
+	eventsHandler := handlers.NewJobsHandler(authRepo, eventRepo, sc)
 
 	router := gin.New()
 
 	router.GET("/health", healthzHandler.HealthzIndex)
 	group := router.Group("/", eventsHandler.BasicMiddleware)
-	group.GET("/events", eventsHandler.EventsIndex)
-	group.POST("/events", eventsHandler.EventsCreate)
-	group.GET("/events/:id", eventsHandler.EventsShow)
-	// group.PUT("/events/:id", eventsHandler.EventsUpdate)
-	// group.DELETE("/events/:id", eventsHandler.EventsDelete)
+	group.GET("/events", eventsHandler.JobsIndex)
+	group.POST("/events", eventsHandler.JobsCreate)
+	group.GET("/events/:id", eventsHandler.JobsDetail)
+	// group.PUT("/events/:id", eventsHandler.JobsUpdate)
+	// group.DELETE("/events/:id", eventsHandler.JobsDelete)
 
 	addr := fmt.Sprintf(":%d", env.Port)
 	log.Debugf("service will start at %s", addr)

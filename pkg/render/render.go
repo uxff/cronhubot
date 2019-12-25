@@ -18,9 +18,9 @@ func Response(w http.ResponseWriter, code int, v interface{}) (err error) {
 	case http.StatusBadRequest:
 		s = "invalid_request"
 	case http.StatusUnprocessableEntity:
-		s = "invalid_event"
+		s = "invalid_cronjob"
 	case http.StatusNotFound:
-		s = "event_not_found"
+		s = "cronjob_not_found"
 	}
 
 	r := &response{s, v}
