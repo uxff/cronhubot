@@ -27,6 +27,7 @@ type CronJob struct {
 	StopAt         utils.JsonTime `json:"stop_at"          xorm:"timestamp not null default('1999-01-01 00:00:00') 'stop_at'"` // 最终停止时间
 	CreatedAt      utils.JsonTime `json:"created_at"       xorm:"timestamp not null default('1999-01-01 00:00:00') 'created_at'"`
 	UpdatedAt      utils.JsonTime `json:"updated_at"       xorm:"timestamp not null default('1999-01-01 00:00:00') 'updated_at'"`
+	HoldBy         uint           `json:"hold_by"          xorm:"timestamp not null default('1999-01-01 00:00:00') 'updated_at'"` // 被哪个节点持有
 }
 
 func NewCronJob() *CronJob {

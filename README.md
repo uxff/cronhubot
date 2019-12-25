@@ -1,4 +1,4 @@
-## CronScheduler
+## CronHubot
 
 * All the flexibility and power of Cron as a Service.
 * Simple REST protocol, integrating with a web application in a easy and straightforward way.
@@ -6,6 +6,7 @@
 
 ## Basic Concepts
 Works by calling back to your application via HTTP GET according to a schedule constructed by you or your application.
+Dynamic register jobs, low-footprint, durable.
 
 ## Setup
 Env vars
@@ -15,10 +16,8 @@ export DATASTORE_URL="postgresql://postgres@localhost/dbname?sslmode=disable"
 export SERVICE_PORT=3000
 
 // mysql
-export DATASTORE_URL="mysql://root:123456@/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+export DATASTORE_URL="mysql://root:123456@tcp(host:port)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 export SERVICE_PORT=3000
-
-// 数据库信息使用k8s的保密字典
 ```
 
 ## Authentication
@@ -115,11 +114,11 @@ Create a new cronjob.
     Common reasons:
     - the cronjob job already scheduled. The `message` will be `Cronjob already exists`
     - the expression must be crontab format.
-    - the retry must be between `0` and `10` 重试次数最多10次
+    - the retry must be between `0` and `10`, max 10 times
     - the status must be `1` or `9`
-    - `request_timeout`: 请求超时时间单位是秒。默认3s
-    - `url`: 回调时会在业务方定义的url参数里加上 "__cronId=$id",以便于被通知方知道是来自哪个任务id）
-    - `stop_at`: 定时任务的过期时间,到期后定时任务不再执行
+    - request_timeout: callback request timeout, default 3s
+    - url: callbackurl, will fill a param "__cronId=$id" in the url, for distinguish which job cause. 
+    - stop_at: as expire time, job will stop after that time.
 
 #### `GET` `/cronjobs/:id`
 Get a specific cronjob.
@@ -231,14 +230,14 @@ The cron expression format allowed is:
 more details about expression format [here](https://godoc.org/github.com/robfig/cron#hdr-CRON_Expression_Format)
 
 
-## 业务方回复消息格式约定
+## response promise by callbacked server
 
-* 消息格式
-    * 业务方收到回调后需要返回以下格式的json数据
-    * 本服务收到后，根据状态码判断当前定时任务是不是有效
-    * 若业务方返回200，则代表定时任务正常
-    * 若业务方返回400，则代表当前定时任务需要删除，后期不再通知业务方
-    * 本服务只根据code码做逻辑判断，message内容不做要求
+* message format:
+    * json is expected.
+    * code value cause the job status changing:
+    * case code equal 200, job will continue;
+    * case code equal 400, job will stop, do not run callback in next cron cycle;
+    * message will be ignored.
     ```json
     {
         "code":200,
@@ -247,9 +246,9 @@ more details about expression format [here](https://godoc.org/github.com/robfig/
     ```
   
 ## TODO LIST
-- [x] 日志
-- [x] 替换成gin框架
-- [ ] 接口权限认证
-- [ ] 分布式
-- [ ] web ui
+- [x] cycle log, counter each job.
+- [x] replace http handler by gin
+- [ ] api authentication
+- [ ] to be distributed
+- [ ] web ui console
 
