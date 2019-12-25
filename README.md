@@ -78,7 +78,7 @@ Create a new cronjob.
       "status": 1,
       "retries": 2,
       "request_timeout": 3,
-      "stop_at": "2019-11-11 01:00:00",
+      "stop_at": "2019-11-11 01:00:00"
    }
     ```
 - Responses:
