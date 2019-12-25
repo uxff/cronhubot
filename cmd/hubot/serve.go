@@ -27,23 +27,23 @@ func Serve(env *config.Config) error {
 	}
 	healthzHandler := handlers.NewHealthzHandler(checkers)
 
-	eventRepo := repos.NewCronJob(ds)
+	cronjobRepo := repos.NewCronJob(ds)
 	authRepo := repos.NewAuth(ds)
 
-	sc := scheduler.New(eventRepo)
+	sc := scheduler.New(cronjobRepo)
 	go sc.ScheduleAll()
 
-	eventsHandler := handlers.NewJobsHandler(authRepo, eventRepo, sc)
+	cronjobHandler := handlers.NewJobsHandler(authRepo, cronjobRepo, sc)
 
 	router := gin.New()
 
 	router.GET("/health", healthzHandler.HealthzIndex)
-	group := router.Group("/", eventsHandler.BasicMiddleware)
-	group.GET("/events", eventsHandler.JobsIndex)
-	group.POST("/events", eventsHandler.JobsCreate)
-	group.GET("/events/:id", eventsHandler.JobsDetail)
-	// group.PUT("/events/:id", eventsHandler.JobsUpdate)
-	// group.DELETE("/events/:id", eventsHandler.JobsDelete)
+	group := router.Group("/", cronjobHandler.BasicMiddleware)
+	group.GET("/cronjobs", cronjobHandler.JobsIndex)
+	group.POST("/cronjobs", cronjobHandler.JobsCreate)
+	group.GET("/cronjobs/:id", cronjobHandler.JobsDetail)
+	// group.PUT("/cronjobs/:id", cronjobHandler.JobsUpdate)
+	// group.DELETE("/cronjobs/:id", cronjobHandler.JobsDelete)
 
 	addr := fmt.Sprintf(":%d", env.Port)
 	log.Debugf("service will start at %s", addr)
