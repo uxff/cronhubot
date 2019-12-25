@@ -24,7 +24,7 @@ func (s *SchedulerMock) Create(*models.CronJob) (err error) {
 	return
 }
 
-func (s *SchedulerMock) Update(event *models.CronJob) (err error) {
+func (s *SchedulerMock) Update(ent *models.CronJob) (err error) {
 	s.Updated = true
 	return
 }

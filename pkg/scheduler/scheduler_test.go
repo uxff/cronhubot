@@ -15,7 +15,7 @@ func TestScheduleAll(t *testing.T) {
 
 func TestSchedulerCreate(t *testing.T) {
 	s := New(mocks.NewJobRepo())
-	c := &models.Event{Id: 1, Expression: "* * * * *"}
+	c := &models.CronJob{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
 	}
@@ -23,7 +23,7 @@ func TestSchedulerCreate(t *testing.T) {
 
 func TestSchedulerFind(t *testing.T) {
 	s := New(mocks.NewJobRepo())
-	c := &models.Event{Id: 1, Expression: "* * * * *"}
+	c := &models.CronJob{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
 	}
@@ -36,12 +36,12 @@ func TestSchedulerFind(t *testing.T) {
 
 func TestSchedulerUpdate(t *testing.T) {
 	s := New(mocks.NewJobRepo())
-	c := &models.Event{Id: 1, Expression: "* * * * *"}
+	c := &models.CronJob{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
 	}
 
-	c.Status = "active"
+	c.Status = models.StatusActive
 	if err := s.Update(c); err != nil {
 		t.Fail()
 	}
@@ -49,7 +49,7 @@ func TestSchedulerUpdate(t *testing.T) {
 
 func TestSchedulerDelete(t *testing.T) {
 	s := New(mocks.NewJobRepo())
-	c := &models.Event{Id: 1, Expression: "* * * * *"}
+	c := &models.CronJob{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
 		t.Fail()
 	}

@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	ErrEventNotExist = errors.New("finding a scheduled event requires a existent cron id")
+	ErrCronjobNotExist = errors.New("finding a scheduled cronjob requires a existent cron id")
 )

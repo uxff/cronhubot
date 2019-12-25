@@ -13,7 +13,7 @@ type JobRepo interface {
 	FindById(id int) (ent *models.CronJob, err error)
 	Update(ent *models.CronJob) (err error)
 	Delete(ent *models.CronJob) (err error)
-	Search(query *models.Query) (events []models.CronJob, err error)
+	Search(query *models.Query) (ents []models.CronJob, err error)
 }
 
 type CronJob struct {
@@ -44,16 +44,16 @@ func (r *CronJob) Update(e *models.CronJob) error {
 
 // 软删除，设置状态为"inactive"即可
 func (r *CronJob) Delete(e *models.CronJob) error {
-	e.Status = models.Inactive
+	e.Status = models.StatusInactive
 	e.UpdatedAt = utils.NewJsonTimeNow()
 	e.StopAt = utils.NewJsonTimeNow()
 	_, err := r.db.Where("id = ?", e.Id).Update(e)
 	return err
 }
 
-func (r *CronJob) Search(q *models.Query) (events []models.CronJob, err error) {
+func (r *CronJob) Search(q *models.Query) (ents []models.CronJob, err error) {
 	if q.IsEmpty() {
-		err = r.db.In("stop_at", models.DefaultTimeStr, utils.ZeroTimeStr).Or("stop_at > ?", utils.TimeToString(time.Now())).Where("status = ?", models.Active).Find(&events)
+		err = r.db.In("stop_at", models.DefaultTimeStr, utils.ZeroTimeStr).Or("stop_at > ?", utils.TimeToString(time.Now())).Where("status = ?", models.StatusActive).Find(&ents)
 		if err != nil {
 			return
 		}
@@ -70,7 +70,7 @@ func (r *CronJob) Search(q *models.Query) (events []models.CronJob, err error) {
 		db.Where("expression = ?", q.Expression)
 	}
 
-	err = db.Find(events)
+	err = db.Find(ents)
 
 	return
 }

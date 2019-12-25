@@ -26,14 +26,14 @@ func NewJobRepo() *JobRepoMock {
 	}
 }
 
-func (repo *JobRepoMock) Create(event *models.CronJob) (err error) {
+func (repo *JobRepoMock) Create(ent *models.CronJob) (err error) {
 	repo.Created = true
 	return
 }
 
-func (repo *JobRepoMock) FindById(id int) (event *models.CronJob, err error) {
+func (repo *JobRepoMock) FindById(id int) (ent *models.CronJob, err error) {
 	repo.Found = true
-	event = &models.CronJob{Id: 1}
+	ent = &models.CronJob{Id: 1}
 	return
 }
 

@@ -13,28 +13,29 @@ import (
 	"github.com/uxff/cronhubot/pkg/models"
 )
 
-func TestEventsIndex(t *testing.T) {
+func TestCronjobsIndex(t *testing.T) {
+	authMock := mocks.NewAuth()
 	repoMock := mocks.NewJobRepo()
 	schedulerMock := mocks.NewScheduler()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/events", nil)
+	req, err := http.NewRequest("GET", "/cronjobs", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.JobsIndex, "GET")
+	r.HandleFunc("/cronjobs", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
-	events := []models.CronJob{}
-	if err := json.NewDecoder(res.Body).Decode(&events); err != nil {
+	cronjobs := []models.CronJob{}
+	if err := json.NewDecoder(res.Body).Decode(&cronjobs); err != nil {
 		t.Fail()
 	}
 
-	if len(events) == 0 {
-		t.Errorf("Expected response to not be empty %s", strconv.Itoa(len(events)))
+	if len(cronjobs) == 0 {
+		t.Errorf("Expected response to not be empty %s", strconv.Itoa(len(cronjobs)))
 	}
 
 	if res.Code != http.StatusOK {
@@ -42,19 +43,20 @@ func TestEventsIndex(t *testing.T) {
 	}
 }
 
-func TestEventsIndexByStatus(t *testing.T) {
+func TestCronjobsIndexByStatus(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/events?status=active", nil)
+	req, err := http.NewRequest("GET", "/cronjobs?status=active", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.JobsIndex, "GET")
+	r.HandleFunc("/cronjobs", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByStatus {
@@ -66,19 +68,20 @@ func TestEventsIndexByStatus(t *testing.T) {
 	}
 }
 
-func TestEventsIndexByExpression(t *testing.T) {
+func TestCronjobsIndexByExpression(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/events?expression=* * * * *", nil)
+	req, err := http.NewRequest("GET", "/cronjobs?expression=* * * * *", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.JobsIndex, "GET")
+	r.HandleFunc("/cronjobs", h.JobsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByExpression {
@@ -90,20 +93,21 @@ func TestEventsIndexByExpression(t *testing.T) {
 	}
 }
 
-func TestEventCreate(t *testing.T) {
+func TestCronjobCreate(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
-	req, err := http.NewRequest("POST", "/events", body)
+	req, err := http.NewRequest("POST", "/cronjobs", body)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/events", h.JobsCreate, "POST")
+	r.HandleFunc("/cronjobs", h.JobsCreate, "POST")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Created {
@@ -119,24 +123,25 @@ func TestEventCreate(t *testing.T) {
 	}
 }
 
-func TestEventShow(t *testing.T) {
+func TestCronjobShow(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/events/1", nil)
+	req, err := http.NewRequest("GET", "/cronjobs/1", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.JobsDetail, "GET")
+	r.HandleFunc("/cronjobs/:id", h.JobsDetail, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Found {
-		t.Error("Expected repo findEventById to be called")
+		t.Error("Expected repo findCronjobById to be called")
 	}
 
 	if res.Code != http.StatusOK {
@@ -144,21 +149,22 @@ func TestEventShow(t *testing.T) {
 	}
 }
 
-func TestEventsUpdate(t *testing.T) {
+func TestCronjobsUpdate(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
-	req, err := http.NewRequest("PUT", "/events/1", body)
+	req, err := http.NewRequest("PUT", "/cronjobs/1", body)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.JobsUpdate, "PUT")
+	r.HandleFunc("/cronjobs/:id", h.JobsUpdate, "PUT")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Updated {
@@ -174,20 +180,21 @@ func TestEventsUpdate(t *testing.T) {
 	}
 }
 
-func TestEventsDelete(t *testing.T) {
+func TestCronjobsDelete(t *testing.T) {
+	authMock := mocks.NewAuth()
 	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewJobRepo()
-	h := NewJobsHandler(repoMock, schedulerMock)
+	h := NewJobsHandler(authMock, repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("DELETE", "/events/1", nil)
+	req, err := http.NewRequest("DELETE", "/cronjobs/1", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/events/:id", h.JobsDelete, "DELETE")
+	r.HandleFunc("/cronjobs/:id", h.JobsDelete, "DELETE")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Deleted {

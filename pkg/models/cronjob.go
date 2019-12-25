@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	Active         = 1
-	Inactive       = 9
+	StatusActive   = 1
+	StatusInactive = 99
 	DefaultTimeStr = "1999-01-01 00:00:00"
 )
 
@@ -31,9 +31,9 @@ type CronJob struct {
 
 func NewCronJob() *CronJob {
 	return &CronJob{
-		Status:         Active, // 默认是有效的定时任务
-		Retries:        0,      // 默认请求业务方时不重试
-		RequestTimeout: 3,      // 请求业务方时默认超时时间是3s
+		Status:         StatusActive, // 默认是有效的定时任务
+		Retries:        0,            // 默认请求业务方时不重试
+		RequestTimeout: 3,            // 请求业务方时默认超时时间是3s
 	}
 }
 
@@ -62,8 +62,8 @@ func (e *CronJob) Validate() (errors map[string]string, ok bool) {
 		errors["expression"] = err.Error()
 	}
 
-	if e.Status != Active && e.Status != Inactive {
-		errors["status"] = fmt.Sprintf("status must be %v or %v", Active, Inactive)
+	if e.Status != StatusActive && e.Status != StatusInactive {
+		errors["status"] = fmt.Sprintf("status must be %v or %v", StatusActive, StatusInactive)
 	}
 
 	if e.Retries < 0 || e.Retries > 10 {

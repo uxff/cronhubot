@@ -36,7 +36,7 @@ func TestValidate_Defaults(t *testing.T) {
 
 func TestValidate_Status(t *testing.T) {
 	e := NewCronJob()
-	e.Status = "invalid"
+	e.Status = StatusActive
 	errors, ok := e.Validate()
 
 	if ok {
@@ -80,32 +80,32 @@ func TestValidate_Retries(t *testing.T) {
 
 func TestSetAttributes(t *testing.T) {
 	e := NewCronJob()
-	newEvent := &CronJob{
+	newCronjob := &CronJob{
 		Url:            "http://newapi.io",
 		Expression:     "1 1 1 1 1",
-		Status:         Inactive,
+		Status:         StatusInactive,
 		Retries:        5,
 		RequestTimeout: 10,
 	}
-	e.SetAttributes(newEvent)
+	e.SetAttributes(newCronjob)
 
-	if e.Url != newEvent.Url {
+	if e.Url != newCronjob.Url {
 		t.Fail()
 	}
 
-	if e.Expression != newEvent.Expression {
+	if e.Expression != newCronjob.Expression {
 		t.Fail()
 	}
 
-	if e.Status != newEvent.Status {
+	if e.Status != newCronjob.Status {
 		t.Fail()
 	}
 
-	if e.Retries != newEvent.Retries {
+	if e.Retries != newCronjob.Retries {
 		t.Fail()
 	}
 
-	if e.RequestTimeout != newEvent.RequestTimeout {
+	if e.RequestTimeout != newCronjob.RequestTimeout {
 		t.Fail()
 	}
 }
@@ -119,15 +119,15 @@ func TestCronJobs_CheckExpression(t *testing.T) {
 	}
 }
 
-func TestNewEvent(t *testing.T) {
-	event := NewCronJob()
+func TestNewCronjob(t *testing.T) {
+	ent := NewCronJob()
 
 	b := []byte(`{"expire_time":"2019-01-01 11:11:11"}`)
-	err := json.Unmarshal(b, event)
+	err := json.Unmarshal(b, ent)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	t.Logf("%+v", event)
+	t.Logf("%+v", ent)
 }

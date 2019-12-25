@@ -5,7 +5,7 @@ import (
 )
 
 func TestIsEmpty(t *testing.T) {
-	q := NewQuery(Active, "exp")
+	q := NewQuery(StatusActive, "exp")
 
 	if q.IsEmpty() {
 		t.Fail()

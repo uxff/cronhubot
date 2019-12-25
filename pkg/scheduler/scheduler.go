@@ -15,8 +15,8 @@ import (
 )
 
 type Scheduler interface {
-	Create(event *models.CronJob) error
-	Update(event *models.CronJob) error
+	Create(ent *models.CronJob) error
+	Update(ent *models.CronJob) error
 	Delete(id uint) error
 	Find(id uint) (*cron.Cron, error)
 	ScheduleAll()
@@ -113,7 +113,7 @@ func (s *scheduler) Find(id uint) (cronJob *cron.Cron, err error) {
 
 	cronJob, found := s.Kv[id]
 	if !found {
-		err = ErrEventNotExist
+		err = ErrCronjobNotExist
 		return
 	}
 
@@ -135,7 +135,7 @@ func (s *scheduler) Delete(id uint) (err error) {
 	_, found := s.Kv[id]
 	if !found {
 		log.Errorf("定时任务未找到,id = %d", id)
-		err = ErrEventNotExist
+		err = ErrCronjobNotExist
 		return
 	}
 
@@ -150,16 +150,16 @@ func (s *scheduler) Delete(id uint) (err error) {
 }
 
 func (s *scheduler) ScheduleAll() {
-	events, err := s.r.Search(&models.Query{})
+	ents, err := s.r.Search(&models.Query{})
 	if err != nil {
-		log.Errorf("Failed to find events!")
+		log.Errorf("Failed to find ents!")
 		return
 	}
 
-	for index, e := range events {
+	for index, e := range ents {
 		log.Infof("准备启动定时任务(%d)：%+v", index, e)
-		if err = s.Create(&events[index]); err != nil {
-			log.Errorf("Failed to create event! event:%+v", e)
+		if err = s.Create(&ents[index]); err != nil {
+			log.Errorf("Failed to create cronjob! ent:%+v", e)
 		}
 	}
 }
