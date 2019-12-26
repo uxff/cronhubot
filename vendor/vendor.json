@@ -1,6 +1,47 @@
 {
 	"comment": "",
 	"ignore": "",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "VrTiQbtu3FoRCY9h3HwjvtGVksw=",
+			"path": "go.uber.org/atomic",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "HephvKOmm5xmOrCzhKEtcw7lqE8=",
+			"path": "go.uber.org/multierr",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "bs4Qet93Z8f2eB8MVdM2hXXTyso=",
+			"path": "go.uber.org/zap",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "eC/XVln77aRfE/VocbN0NWdlRdg=",
+			"path": "go.uber.org/zap/buffer",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "MuxOAtZEsJitlWBzhmpm2vGiHok=",
+			"path": "go.uber.org/zap/internal/bufferpool",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "uC0L9eCSAYcCWNC8udJk/t1vvIU=",
+			"path": "go.uber.org/zap/internal/color",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "b80CJExrVpXu3SA1iCQ6uLqTn2c=",
+			"path": "go.uber.org/zap/internal/exit",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "iH3qg/pvsxQ9XW5t8FTc6veuYhY=",
+			"path": "go.uber.org/zap/zapcore",
+			"revision": ""
+		}
+	],
 	"rootPath": "github.com/uxff/cronhubot"
 }
